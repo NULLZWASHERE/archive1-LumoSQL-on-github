@@ -1,3 +1,19 @@
+const API_KEYS = [
+  "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",
+  "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",
+  "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"
+].filter(Boolean);
+
+let currentKeyIndex = 0;
+
+function getNextApiKey() {
+  const key = API_KEYS[currentKeyIndex];
+
+  currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+
+  return key;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -11,6 +27,12 @@ export default async function handler(req, res) {
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({
         error: "Messages array required"
+      });
+    }
+
+    if (API_KEYS.length === 0) {
+      return res.status(500).json({
+        error: "No API keys configured"
       });
     }
 
@@ -106,41 +128,72 @@ GstJPaul is the founder and sole developer of GPA AI. He created me with the vis
 
 [Web search is currently OFF. Do not claim to have real-time internet access. If asked about current information, be honest that web search needs to be enabled via the + menu.]`;
 
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer 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`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+    let response;
+    let data;
+    let lastError = null;
 
-          messages: [
-            {
-              role: "system",
-              content: systemPrompt
+    // Try every API key until one works
+    for (let i = 0; i < API_KEYS.length; i++) {
+      const apiKey = getNextApiKey();
+
+      try {
+        response = await fetch(
+          "https://api.groq.com/openai/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json"
             },
+            body: JSON.stringify({
+              model: "llama-3.3-70b-versatile",
 
-            ...messages
-          ],
+              messages: [
+                {
+                  role: "system",
+                  content: systemPrompt
+                },
 
-          temperature: 0.7,
-          max_tokens: 2048,
-          top_p: 0.95,
-          stream: false
-        })
+                ...messages
+              ],
+
+              temperature: 0.7,
+              max_tokens: 2048,
+              top_p: 0.95,
+              stream: false
+            })
+          }
+        );
+
+        data = await response.json();
+
+        // Success
+        if (response.ok) {
+          return res.status(200).json(data);
+        }
+
+        // Rate limit or invalid key -> try next key
+        if (
+          response.status === 429 ||
+          response.status === 401 ||
+          response.status === 403
+        ) {
+          lastError = data;
+          continue;
+        }
+
+        // Other errors
+        return res.status(response.status).json(data);
+
+      } catch (err) {
+        lastError = err;
       }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return res.status(response.status).json(data);
     }
 
-    return res.status(200).json(data);
+    return res.status(500).json({
+      error: "All API keys failed",
+      details: lastError
+    });
 
   } catch (err) {
     console.error(err);
