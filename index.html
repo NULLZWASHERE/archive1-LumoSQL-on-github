@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>GPA AI</title>
+<title>Nebula AI</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -27,7 +27,7 @@
 
 body{
   background:
-    radial-gradient(circle at top left,#0f172a,#020617 70%);
+    radial-gradient(circle at top left,#111827,#020617 70%);
   font-family:Inter,sans-serif;
   color:white;
   overflow:hidden;
@@ -42,7 +42,7 @@ body{
 .topbar{
   height:80px;
   border-bottom:1px solid rgba(255,255,255,.06);
-  background:rgba(15,23,42,.7);
+  background:rgba(2,6,23,.75);
   backdrop-filter:blur(20px);
   display:flex;
   align-items:center;
@@ -57,18 +57,38 @@ body{
 }
 
 .logo{
-  width:52px;
-  height:52px;
+  width:54px;
+  height:54px;
   border-radius:18px;
-  border:1px solid rgba(34,211,238,.3);
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #06b6d4
+    );
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:22px;
+  font-weight:900;
+
   box-shadow:
-    0 0 25px rgba(34,211,238,.15);
+    0 0 30px rgba(124,58,237,.35);
 }
 
 .title{
   font-size:28px;
-  font-weight:800;
-  background:linear-gradient(90deg,#22d3ee,#a855f7);
+  font-weight:900;
+
+  background:
+    linear-gradient(
+      90deg,
+      #06b6d4,
+      #8b5cf6
+    );
+
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
@@ -92,7 +112,6 @@ body{
 
 .new-chat:hover{
   background:rgba(255,255,255,.08);
-  transform:translateY(-1px);
 }
 
 .chat{
@@ -110,8 +129,8 @@ body{
   background:
     linear-gradient(
       135deg,
-      rgba(34,211,238,.12),
-      rgba(168,85,247,.10)
+      rgba(6,182,212,.12),
+      rgba(139,92,246,.10)
     );
 
   border:1px solid rgba(255,255,255,.06);
@@ -128,28 +147,16 @@ body{
     0 20px 80px rgba(0,0,0,.45);
 }
 
-.hero-card::before{
-  content:"";
-  position:absolute;
-  width:500px;
-  height:500px;
-  background:
-    radial-gradient(circle,#22d3ee33,transparent 70%);
-  top:-250px;
-  right:-200px;
-}
-
 .hero-title{
-  font-size:60px;
+  font-size:64px;
   font-weight:900;
   line-height:1;
 
   background:
     linear-gradient(
       90deg,
-      #22d3ee,
-      #60a5fa,
-      #a855f7
+      #06b6d4,
+      #8b5cf6
     );
 
   -webkit-background-clip:text;
@@ -173,7 +180,7 @@ body{
 }
 
 .prompt-card{
-  background:rgba(15,23,42,.75);
+  background:rgba(15,23,42,.7);
   border:1px solid rgba(255,255,255,.06);
   border-radius:24px;
   padding:22px;
@@ -183,21 +190,17 @@ body{
 
 .prompt-card:hover{
   transform:
-    translateY(-4px)
-    scale(1.02);
+    translateY(-4px);
 
   border-color:
-    rgba(34,211,238,.4);
-
-  box-shadow:
-    0 10px 40px rgba(34,211,238,.08);
+    rgba(6,182,212,.45);
 }
 
 .prompt-tag{
   font-size:11px;
   font-weight:700;
   letter-spacing:2px;
-  color:#22d3ee;
+  color:#06b6d4;
   margin-bottom:12px;
 }
 
@@ -226,7 +229,7 @@ body{
 .bubble{
   max-width:780px;
   padding:22px 24px;
-  border-radius:30px;
+  border-radius:28px;
   line-height:1.7;
   font-size:16px;
   animation:fade .25s ease;
@@ -236,19 +239,16 @@ body{
   background:
     linear-gradient(
       135deg,
-      #06b6d4,
+      #7c3aed,
       #2563eb
     );
-
-  box-shadow:
-    0 10px 40px rgba(37,99,235,.25);
 
   border-bottom-right-radius:10px;
 }
 
 .ai .bubble{
   background:
-    rgba(15,23,42,.8);
+    rgba(15,23,42,.82);
 
   border:
     1px solid rgba(255,255,255,.06);
@@ -257,9 +257,6 @@ body{
 
   backdrop-filter:
     blur(16px);
-
-  box-shadow:
-    0 10px 40px rgba(0,0,0,.25);
 }
 
 .input-wrap{
@@ -294,10 +291,7 @@ textarea{
     1px solid rgba(255,255,255,.08);
 
   background:
-    rgba(15,23,42,.85);
-
-  backdrop-filter:
-    blur(18px);
+    rgba(15,23,42,.88);
 
   color:white;
 
@@ -309,17 +303,11 @@ textarea{
   resize:none;
 
   outline:none;
-
-  box-shadow:
-    0 10px 40px rgba(0,0,0,.35);
 }
 
 textarea:focus{
   border-color:
-    rgba(34,211,238,.5);
-
-  box-shadow:
-    0 0 0 4px rgba(34,211,238,.08);
+    rgba(6,182,212,.45);
 }
 
 .send-btn{
@@ -339,7 +327,7 @@ textarea:focus{
     linear-gradient(
       135deg,
       #06b6d4,
-      #2563eb
+      #7c3aed
     );
 
   color:white;
@@ -347,17 +335,6 @@ textarea:focus{
   font-size:22px;
 
   cursor:pointer;
-
-  transition:.2s;
-
-  box-shadow:
-    0 10px 30px rgba(37,99,235,.35);
-}
-
-.send-btn:hover{
-  transform:
-    scale(1.05)
-    translateY(-2px);
 }
 
 .typing{
@@ -369,7 +346,7 @@ textarea:focus{
   width:10px;
   height:10px;
   border-radius:999px;
-  background:#22d3ee;
+  background:#06b6d4;
   animation:bounce 1s infinite;
 }
 
@@ -380,8 +357,6 @@ textarea:focus{
 .typing div:nth-child(3){
   animation-delay:.4s;
 }
-
-/* MARKDOWN */
 
 .markdown{
   color:#e2e8f0;
@@ -412,7 +387,6 @@ textarea:focus{
   background:#0f172a;
   padding:3px 7px;
   border-radius:8px;
-  font-size:14px;
 }
 
 .markdown pre{
@@ -426,13 +400,6 @@ textarea:focus{
   padding:20px;
   display:block;
   overflow:auto;
-}
-
-.markdown blockquote{
-  border-left:4px solid #22d3ee;
-  padding-left:16px;
-  color:#94a3b8;
-  margin:16px 0;
 }
 
 @keyframes bounce{
@@ -469,18 +436,17 @@ textarea:focus{
 
     <div class="logo-wrap">
 
-      <img
-        class="logo"
-        src="https://yt3.ggpht.com/kEMj42kVlzpnjW8rECOiO7rLgd6-FdP_WVsEbKtWmwnSsPki3wk_V_29z1aRDQujwPfaR9ScyA=s160-c-k-c0x00ffffff-no-rj"
-      >
+      <div class="logo">
+        N
+      </div>
 
       <div>
         <div class="title">
-          GPA AI
+          Nebula AI
         </div>
 
         <div class="subtitle">
-          Smart AI Assistant
+          Powered by Kimi K2.6
         </div>
       </div>
 
@@ -502,69 +468,69 @@ textarea:focus{
       <div class="hero-card">
 
         <div class="hero-title">
-          GPA AI
+          Nebula AI
         </div>
 
         <div class="hero-text">
-          Powerful AI for coding, writing, websites, ideas, and more.
+          Fast AI assistant for coding, writing, websites, research, and creative ideas.
         </div>
 
         <div class="prompt-grid">
 
           <div
             class="prompt-card"
-            onclick="usePrompt('Build a modern dashboard website with HTML CSS and JavaScript')"
+            onclick="usePrompt('Build a futuristic landing page using HTML CSS and JavaScript')"
           >
             <div class="prompt-tag">
               WEBSITE
             </div>
 
             <div class="prompt-title">
-              Build a dashboard
+              Create a landing page
             </div>
 
             <div class="prompt-desc">
-              Generate a clean modern admin panel UI.
+              Generate a modern responsive website UI.
             </div>
           </div>
 
           <div
             class="prompt-card"
-            onclick="usePrompt('Write a Discord bot with slash commands in JavaScript')"
+            onclick="usePrompt('Write a Discord bot with moderation commands in JavaScript')"
           >
             <div class="prompt-tag">
               CODING
             </div>
 
             <div class="prompt-title">
-              Create a Discord bot
+              Build a Discord bot
             </div>
 
             <div class="prompt-desc">
-              Generate a complete production-ready bot.
+              Full production-ready bot code instantly.
             </div>
           </div>
 
           <div
             class="prompt-card"
-            onclick="usePrompt('Explain black holes in simple terms')"
+            onclick="usePrompt('Explain quantum physics in simple terms')"
           >
             <div class="prompt-tag">
               EDUCATION
             </div>
 
             <div class="prompt-title">
-              Learn something new
+              Learn new topics
             </div>
 
             <div class="prompt-desc">
-              Get easy-to-understand explanations.
+              Easy explanations for difficult concepts.
             </div>
           </div>
 
           <div
             class="prompt-card"
-            onclick="usePrompt('Create a viral YouTube video idea with title description and tags')"
+            onclick="usePrompt('Create a viral YouTube video idea with title and tags')"
           >
             <div class="prompt-tag">
               CONTENT
@@ -575,7 +541,7 @@ textarea:focus{
             </div>
 
             <div class="prompt-desc">
-              Create viral concepts instantly.
+              Create engaging viral concepts quickly.
             </div>
           </div>
 
@@ -593,7 +559,7 @@ textarea:focus{
 
       <textarea
         id="prompt"
-        placeholder="Message GPA AI..."
+        placeholder="Message Nebula AI..."
       ></textarea>
 
       <button
@@ -641,8 +607,6 @@ async function send() {
   const chat =
     document.getElementById("chat");
 
-  // USER MESSAGE
-
   chat.innerHTML += `
     <div class="message-row user">
       <div class="bubble">
@@ -652,8 +616,6 @@ async function send() {
   `;
 
   document.getElementById("prompt").value = "";
-
-  // TYPING
 
   const typingId =
     "typing-" + Date.now();
@@ -675,7 +637,7 @@ async function send() {
 
   try {
 
-    const response = await fetch("/api/chat", {
+    const response = await fetch("/api/gpai", {
       method: "POST",
 
       headers: {
@@ -701,16 +663,7 @@ async function send() {
 
     let reply =
       data.choices?.[0]?.message?.content ||
-      "No response";
-
-    // REMOVE CODE LANGUAGE TAGS
-
-    reply = reply
-      .replace(/```html/g,"```")
-      .replace(/```javascript/g,"```")
-      .replace(/```css/g,"```");
-
-    // MARKDOWN RENDER
+      "No response from AI.";
 
     const html =
       marked.parse(reply);
@@ -724,8 +677,6 @@ async function send() {
         </div>
       </div>
     `;
-
-    // CODE HIGHLIGHT
 
     document
       .querySelectorAll("pre code")
@@ -745,7 +696,7 @@ async function send() {
     chat.innerHTML += `
       <div class="message-row ai">
         <div class="bubble">
-          Failed to connect to GPA AI API.
+          Failed to connect to Nebula AI API.
         </div>
       </div>
     `;
@@ -753,8 +704,6 @@ async function send() {
     console.error(err);
   }
 }
-
-// ENTER TO SEND
 
 document
   .getElementById("prompt")
