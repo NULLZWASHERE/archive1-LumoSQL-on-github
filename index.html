@@ -4,11 +4,21 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>GPAI Chat</title>
+<title>NovaMind AI</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/common.min.js"></script>
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/highlight.js/styles/github-dark.min.css"
+/>
 
 <style>
+
 *{
   margin:0;
   padding:0;
@@ -16,212 +26,736 @@
 }
 
 body{
-  background:#0f1117;
+  background:
+    radial-gradient(circle at top left,#111827,#020617 70%);
+  font-family:Inter,sans-serif;
   color:white;
-  font-family:'Inter',sans-serif;
+  overflow:hidden;
+}
+
+.app{
   height:100vh;
   display:flex;
   flex-direction:column;
 }
 
-header{
-  padding:18px 24px;
-  border-bottom:1px solid #23262f;
-  font-size:22px;
-  font-weight:800;
-  background:#151822;
+.topbar{
+  height:80px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  background:rgba(2,6,23,.75);
+  backdrop-filter:blur(20px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
 }
 
-#chat{
-  flex:1;
-  overflow-y:auto;
-  padding:20px;
+.logo-wrap{
   display:flex;
-  flex-direction:column;
+  align-items:center;
   gap:16px;
 }
 
-.message{
-  max-width:80%;
-  padding:14px 16px;
+.logo{
+  width:54px;
+  height:54px;
   border-radius:18px;
-  line-height:1.5;
-  white-space:pre-wrap;
-  word-wrap:break-word;
-}
 
-.user{
-  align-self:flex-end;
-  background:#2563eb;
-}
+  background:
+    linear-gradient(
+      135deg,
+      #06b6d4,
+      #8b5cf6
+    );
 
-.ai{
-  align-self:flex-start;
-  background:#1d2330;
-}
-
-.bottom{
-  padding:18px;
-  border-top:1px solid #23262f;
   display:flex;
-  gap:12px;
-  background:#151822;
+  align-items:center;
+  justify-content:center;
+
+  font-size:24px;
+  font-weight:900;
+
+  box-shadow:
+    0 0 30px rgba(6,182,212,.3);
+}
+
+.title{
+  font-size:28px;
+  font-weight:900;
+
+  background:
+    linear-gradient(
+      90deg,
+      #06b6d4,
+      #8b5cf6
+    );
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+  color:#94a3b8;
+  font-size:13px;
+  margin-top:2px;
+}
+
+.new-chat{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  color:white;
+  padding:12px 18px;
+  border-radius:16px;
+  cursor:pointer;
+  transition:.2s;
+  font-weight:600;
+}
+
+.new-chat:hover{
+  background:rgba(255,255,255,.08);
+}
+
+.chat{
+  flex:1;
+  overflow-y:auto;
+  padding:40px 20px 180px;
+}
+
+.hero{
+  max-width:1000px;
+  margin:auto;
+}
+
+.hero-card{
+  background:
+    linear-gradient(
+      135deg,
+      rgba(6,182,212,.12),
+      rgba(139,92,246,.12)
+    );
+
+  border:1px solid rgba(255,255,255,.06);
+
+  border-radius:36px;
+
+  padding:42px;
+
+  box-shadow:
+    0 20px 80px rgba(0,0,0,.45);
+}
+
+.hero-title{
+  font-size:64px;
+  font-weight:900;
+  line-height:1;
+
+  background:
+    linear-gradient(
+      90deg,
+      #06b6d4,
+      #8b5cf6
+    );
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.hero-text{
+  color:#cbd5e1;
+  font-size:18px;
+  line-height:1.7;
+  margin-top:18px;
+  max-width:720px;
+}
+
+.prompt-grid{
+  margin-top:35px;
+  display:grid;
+  grid-template-columns:
+    repeat(auto-fit,minmax(240px,1fr));
+  gap:18px;
+}
+
+.prompt-card{
+  background:rgba(15,23,42,.75);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:24px;
+  padding:22px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.prompt-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(6,182,212,.35);
+}
+
+.prompt-tag{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:2px;
+  color:#06b6d4;
+  margin-bottom:12px;
+}
+
+.prompt-title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.prompt-desc{
+  color:#94a3b8;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.message-row{
+  max-width:1100px;
+  margin:auto auto 28px;
+  display:flex;
+}
+
+.message-row.user{
+  justify-content:flex-end;
+}
+
+.bubble{
+  max-width:780px;
+  padding:22px 24px;
+  border-radius:30px;
+  line-height:1.7;
+  font-size:16px;
+  animation:fade .25s ease;
+}
+
+.user .bubble{
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #2563eb
+    );
+
+  border-bottom-right-radius:10px;
+}
+
+.ai .bubble{
+  background:
+    rgba(15,23,42,.82);
+
+  border:
+    1px solid rgba(255,255,255,.06);
+
+  border-bottom-left-radius:10px;
+}
+
+.input-wrap{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+
+  padding:26px;
+
+  background:
+    linear-gradient(
+      to top,
+      #020617,
+      transparent
+    );
+}
+
+.input-box{
+  max-width:1000px;
+  margin:auto;
+  position:relative;
 }
 
 textarea{
-  flex:1;
+  width:100%;
+  height:90px;
+
+  border-radius:30px;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  background:
+    rgba(15,23,42,.9);
+
+  color:white;
+
+  padding:
+    26px 90px 26px 28px;
+
+  font-size:17px;
+
   resize:none;
-  border:none;
+
   outline:none;
-  background:#1d2330;
-  color:white;
-  border-radius:14px;
-  padding:14px;
-  font-size:15px;
-  height:58px;
 }
 
-button{
+textarea:focus{
+  border-color:
+    rgba(6,182,212,.45);
+}
+
+.send-btn{
+  position:absolute;
+
+  right:16px;
+  bottom:16px;
+
+  width:56px;
+  height:56px;
+
   border:none;
-  outline:none;
-  background:#2563eb;
+
+  border-radius:20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #06b6d4,
+      #7c3aed
+    );
+
   color:white;
-  padding:0 24px;
-  border-radius:14px;
-  font-weight:700;
+
+  font-size:22px;
+
   cursor:pointer;
-  transition:.2s;
-}
-
-button:hover{
-  opacity:.85;
 }
 
 .typing{
-  opacity:.7;
-  font-style:italic;
+  display:flex;
+  gap:8px;
 }
+
+.typing div{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background:#06b6d4;
+  animation:bounce 1s infinite;
+}
+
+.typing div:nth-child(2){
+  animation-delay:.2s;
+}
+
+.typing div:nth-child(3){
+  animation-delay:.4s;
+}
+
+.markdown{
+  color:#e2e8f0;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3{
+  margin-top:18px;
+  margin-bottom:10px;
+}
+
+.markdown p{
+  margin:12px 0;
+}
+
+.markdown ul,
+.markdown ol{
+  padding-left:22px;
+  margin:12px 0;
+}
+
+.markdown li{
+  margin:8px 0;
+}
+
+.markdown code{
+  background:#0f172a;
+  padding:3px 7px;
+  border-radius:8px;
+}
+
+.markdown pre{
+  margin-top:14px;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.markdown pre code{
+  padding:20px;
+  display:block;
+  overflow:auto;
+}
+
+@keyframes bounce{
+  0%,100%{
+    transform:translateY(0);
+    opacity:.4;
+  }
+
+  50%{
+    transform:translateY(-8px);
+    opacity:1;
+  }
+}
+
+@keyframes fade{
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
 </style>
 </head>
 <body>
 
-<header>
-  GPAI Chat
-</header>
+<div class="app">
 
-<div id="chat"></div>
+  <div class="topbar">
 
-<div class="bottom">
-  <textarea
-    id="prompt"
-    placeholder="Message GPAI..."
-  ></textarea>
+    <div class="logo-wrap">
 
-  <button onclick="send()">
-    Send
-  </button>
+      <div class="logo">
+        N
+      </div>
+
+      <div>
+
+        <div class="title">
+          NovaMind AI
+        </div>
+
+        <div class="subtitle">
+          Streaming AI Assistant
+        </div>
+
+      </div>
+
+    </div>
+
+    <button
+      class="new-chat"
+      onclick="clearChat()"
+    >
+      + New Chat
+    </button>
+
+  </div>
+
+  <div
+    class="chat"
+    id="chat"
+  >
+
+    <div class="hero">
+
+      <div class="hero-card">
+
+        <div class="hero-title">
+          NovaMind AI
+        </div>
+
+        <div class="hero-text">
+          Fast streaming AI powered by Kimi K2.6 for coding, writing, websites, research, and creative ideas.
+        </div>
+
+        <div class="prompt-grid">
+
+          <div
+            class="prompt-card"
+            onclick="usePrompt('Build a futuristic dashboard website using HTML CSS and JavaScript')"
+          >
+            <div class="prompt-tag">
+              WEBSITE
+            </div>
+
+            <div class="prompt-title">
+              Create a dashboard
+            </div>
+
+            <div class="prompt-desc">
+              Generate a modern admin panel instantly.
+            </div>
+          </div>
+
+          <div
+            class="prompt-card"
+            onclick="usePrompt('Write a Discord bot with slash commands in JavaScript')"
+          >
+            <div class="prompt-tag">
+              CODING
+            </div>
+
+            <div class="prompt-title">
+              Build a Discord bot
+            </div>
+
+            <div class="prompt-desc">
+              Production-ready code generated instantly.
+            </div>
+          </div>
+
+          <div
+            class="prompt-card"
+            onclick="usePrompt('Explain quantum physics simply')"
+          >
+            <div class="prompt-tag">
+              EDUCATION
+            </div>
+
+            <div class="prompt-title">
+              Learn something
+            </div>
+
+            <div class="prompt-desc">
+              Understand complex concepts easily.
+            </div>
+          </div>
+
+          <div
+            class="prompt-card"
+            onclick="usePrompt('Create a viral YouTube video idea with title and tags')"
+          >
+            <div class="prompt-tag">
+              CONTENT
+            </div>
+
+            <div class="prompt-title">
+              Generate ideas
+            </div>
+
+            <div class="prompt-desc">
+              Create viral content concepts instantly.
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="input-wrap">
+
+    <div class="input-box">
+
+      <textarea
+        id="prompt"
+        placeholder="Message NovaMind AI..."
+      ></textarea>
+
+      <button
+        class="send-btn"
+        onclick="send()"
+      >
+        ↑
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
 
 <script>
-const chat = document.getElementById("chat");
-const promptInput = document.getElementById("prompt");
 
-const messages = [];
+marked.setOptions({
+  breaks:true
+});
 
-function addMessage(content, role) {
-  const div = document.createElement("div");
+function usePrompt(text){
+  document.getElementById("prompt").value = text;
+  document.getElementById("prompt").focus();
+}
 
-  div.className =
-    "message " + (role === "user" ? "user" : "ai");
+function clearChat(){
+  document.getElementById("chat").innerHTML = "";
+}
 
-  div.textContent = content;
-
-  chat.appendChild(div);
-
-  chat.scrollTop = chat.scrollHeight;
-
-  return div;
+function escapeHtml(text){
+  return text
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
 }
 
 async function send() {
-  const prompt = promptInput.value.trim();
 
-  if (!prompt) return;
+  const prompt =
+    document.getElementById("prompt").value;
 
-  // Add user message
-  addMessage(prompt, "user");
+  if (!prompt.trim()) return;
 
-  messages.push({
-    role: "user",
-    content: prompt
-  });
+  const chat =
+    document.getElementById("chat");
 
-  promptInput.value = "";
+  // USER MESSAGE
 
-  // Typing message
-  const typing = addMessage("Thinking...", "ai");
-  typing.classList.add("typing");
+  chat.innerHTML += `
+    <div class="message-row user">
+      <div class="bubble">
+        ${escapeHtml(prompt)}
+      </div>
+    </div>
+  `;
+
+  document.getElementById("prompt").value = "";
+
+  // AI MESSAGE PLACEHOLDER
+
+  const aiId =
+    "ai-" + Date.now();
+
+  chat.innerHTML += `
+    <div class="message-row ai">
+      <div class="bubble">
+        <div
+          class="markdown"
+          id="${aiId}"
+        >
+          <div class="typing">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const aiElement =
+    document.getElementById(aiId);
+
+  chat.scrollTop =
+    chat.scrollHeight;
 
   try {
-    const response = await fetch("/api/chat", {
-      method: "POST",
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+    const response = await fetch(
+      "/api/gpai",
+      {
+        method:"POST",
 
-      body: JSON.stringify({
-        messages
-      })
-    });
+        headers:{
+          "Content-Type":"application/json"
+        },
 
-    const data = await response.json();
+        body:JSON.stringify({
+          messages:[
+            {
+              role:"user",
+              content:prompt
+            }
+          ]
+        })
+      }
+    );
 
-    typing.remove();
+    // STREAM READER
 
-    console.log(data);
+    const reader =
+      response.body.getReader();
 
-    // Error handling
-    if (data.error) {
-      addMessage(
-        "Error: " + JSON.stringify(data),
-        "ai"
-      );
+    const decoder =
+      new TextDecoder();
 
-      return;
+    let fullText = "";
+
+    while (true) {
+
+      const { done, value } =
+        await reader.read();
+
+      if (done) break;
+
+      const chunk =
+        decoder.decode(value);
+
+      const lines =
+        chunk.split("\n");
+
+      for (const line of lines) {
+
+        if (
+          line.startsWith("data:")
+        ) {
+
+          const data =
+            line.replace("data:","").trim();
+
+          if (
+            data === "[DONE]"
+          ) continue;
+
+          try {
+
+            const json =
+              JSON.parse(data);
+
+            const token =
+              json.choices?.[0]?.delta?.content || "";
+
+            fullText += token;
+
+            aiElement.innerHTML =
+              marked.parse(fullText);
+
+            document
+              .querySelectorAll("pre code")
+              .forEach((block)=>{
+                hljs.highlightElement(block);
+              });
+
+            chat.scrollTop =
+              chat.scrollHeight;
+
+          } catch {}
+        }
+      }
     }
 
-    // NVIDIA/OpenAI-style response
-    const reply =
-      data.choices?.[0]?.message?.content ||
-      "No response.";
-
-    addMessage(reply, "ai");
-
-    messages.push({
-      role: "assistant",
-      content: reply
-    });
-
   } catch (err) {
-    typing.remove();
 
-    addMessage(
-      "Request failed: " + err.message,
-      "ai"
-    );
+    aiElement.innerHTML = `
+      Failed to connect to NovaMind AI API.
+    `;
 
     console.error(err);
   }
 }
 
-// Enter to send
-promptInput.addEventListener("keydown", e => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    send();
-  }
-});
+// ENTER TO SEND
+
+document
+  .getElementById("prompt")
+  .addEventListener(
+    "keydown",
+    function(e){
+
+      if(
+        e.key === "Enter" &&
+        !e.shiftKey
+      ){
+        e.preventDefault();
+        send();
+      }
+    }
+  );
+
 </script>
 
 </body>
