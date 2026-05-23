@@ -6,13 +6,12 @@ let currentKeyIndex = 0;
 
 function getNextApiKey() {
   const key = API_KEYS[currentKeyIndex];
-
   currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
-
   return key;
 }
 
 export default async function handler(req, res) {
+  // Allow only POST
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed"
@@ -22,75 +21,95 @@ export default async function handler(req, res) {
   try {
     const { messages } = req.body;
 
+    // Validate input
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({
         error: "Messages array required"
       });
     }
 
+    // No API keys
     if (API_KEYS.length === 0) {
       return res.status(500).json({
         error: "No API keys configured"
       });
     }
 
-    let response;
-    let data;
     let lastError = null;
 
-    // Try every API key until one works
+    // Try all keys
     for (let i = 0; i < API_KEYS.length; i++) {
       const apiKey = getNextApiKey();
 
       try {
-        response = await fetch(
+        const response = await fetch(
           "https://integrate.api.nvidia.com/v1/chat/completions",
           {
             method: "POST",
             headers: {
-              "Authorization": `Bearer ${apiKey}`,
+              Authorization: `Bearer ${apiKey}`,
               "Content-Type": "application/json",
-              "Accept": "application/json"
+              Accept: "application/json"
             },
             body: JSON.stringify({
-              model: "moonshotai/kimi-k2.6",
+              model: "meta/llama-3.1-70b-instruct",
 
               messages,
 
-              max_tokens: 16384,
-              temperature: 1.0,
-              top_p: 1.0,
-              stream: true,
+              temperature: 0.7,
+              top_p: 1,
+              max_tokens: 2048,
 
-              chat_template_kwargs: {
-                thinking: false
-              }
+              // IMPORTANT
+              stream: false
             })
           }
         );
 
-        data = await response.json();
+        // Read raw text first
+        const text = await response.text();
+
+        let data;
+
+        // Parse safely
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = {
+            raw: text
+          };
+        }
+
+        console.log("STATUS:", response.status);
+        console.log("DATA:", data);
 
         // Success
         if (response.ok) {
           return res.status(200).json(data);
         }
 
-        // Rate limit or invalid key -> try next key
+        // Retry next key on auth/rate errors
         if (
-          response.status === 429 ||
           response.status === 401 ||
-          response.status === 403
+          response.status === 403 ||
+          response.status === 429
         ) {
           lastError = data;
           continue;
         }
 
-        // Other errors
-        return res.status(response.status).json(data);
+        // Other API errors
+        return res.status(response.status).json({
+          error: "NVIDIA API error",
+          details: data
+        });
 
       } catch (err) {
-        lastError = err;
+        console.error("KEY FAILED:", err);
+
+        lastError = {
+          message: err.message
+        };
       }
     }
 
@@ -100,10 +119,11 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("SERVER ERROR:", err);
 
     return res.status(500).json({
-      error: "Internal server error"
+      error: "Internal server error",
+      details: err.message
     });
   }
 }
