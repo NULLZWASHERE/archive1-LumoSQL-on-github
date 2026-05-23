@@ -63,7 +63,7 @@ export default async function handler(req, res) {
               stream: false,
 
               chat_template_kwargs: {
-                thinking: true
+                thinking: false
               }
             })
           }
