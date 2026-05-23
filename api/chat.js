@@ -60,7 +60,7 @@ export default async function handler(req, res) {
               max_tokens: 16384,
               temperature: 1.0,
               top_p: 1.0,
-              stream: false,
+              stream: true,
 
               chat_template_kwargs: {
                 thinking: false
