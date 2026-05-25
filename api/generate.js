@@ -5,34 +5,38 @@ import sharp from "sharp";
 
 export default async function handler(req, res) {
   try {
+    // Only allow POST
     if (req.method !== "POST") {
       return res.status(405).json({
         error: "Method not allowed",
       });
     }
 
+    // Body
     const {
       prompt,
       width = 1024,
       height = 1024,
-      seed,
       steps = 4,
+      seed,
     } = req.body || {};
 
+    // Validate prompt
     if (!prompt) {
       return res.status(400).json({
         error: "Prompt is required",
       });
     }
 
+    // NVIDIA API
     const invokeUrl =
       "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.2-klein-4b";
 
+    // Request image
     const response = await fetch(invokeUrl, {
       method: "POST",
       headers: {
-        Authorization:
-          "Bearer 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",
+        Authorization: "Bearer YOUR_NVIDIA_API_KEY",
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -45,6 +49,7 @@ export default async function handler(req, res) {
       }),
     });
 
+    // Parse response
     const data = await response.json();
 
     // NVIDIA API error
@@ -55,7 +60,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // Find image
+    // Find base64 image
     let imageBase64 = null;
 
     if (typeof data.image === "string") {
@@ -68,7 +73,7 @@ export default async function handler(req, res) {
       imageBase64 = data.artifacts[0].base64;
     }
 
-    // No image returned
+    // No image
     if (!imageBase64) {
       return res.status(500).json({
         error: "No image returned",
@@ -76,32 +81,43 @@ export default async function handler(req, res) {
       });
     }
 
-    // Remove data URL prefix if present
+    // Remove base64 prefix if exists
     imageBase64 = imageBase64.replace(
       /^data:image\/\w+;base64,/,
       ""
     );
 
+    // Convert to buffer
     const imageBuffer = Buffer.from(imageBase64, "base64");
 
     // Watermark SVG
     const watermarkSvg = `
       <svg width="${width}" height="${height}">
         <style>
-          .title {
+          .text {
             fill: white;
-            font-size: 42px;
+            font-size: 38px;
             font-weight: bold;
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
           }
         </style>
 
+        <!-- Dark transparent bar -->
+        <rect
+          x="0"
+          y="${height - 80}"
+          width="${width}"
+          height="80"
+          fill="black"
+          opacity="0.45"
+        />
+
+        <!-- Watermark text -->
         <text
           x="50%"
-          y="95%"
+          y="${height - 30}"
           text-anchor="middle"
-          class="title"
-          opacity="0.8"
+          class="text"
         >
           discord.gg/25ya7J5h
         </text>
@@ -113,14 +129,17 @@ export default async function handler(req, res) {
       .composite([
         {
           input: Buffer.from(watermarkSvg),
-          gravity: "south",
+          top: 0,
+          left: 0,
         },
       ])
       .png()
       .toBuffer();
 
+    // Convert final image to base64
     const finalBase64 = finalImage.toString("base64");
 
+    // Return image
     return res.status(200).json({
       success: true,
       image: finalBase64,
@@ -129,7 +148,7 @@ export default async function handler(req, res) {
     console.error("SERVER ERROR:", err);
 
     return res.status(500).json({
-      error: err.message || "Internal server error",
+      error: err.message || "Internal Server Error",
     });
   }
 }
