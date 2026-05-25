@@ -52,24 +52,17 @@ export default async function handler(req, res) {
       return res.status(response.status).json(data);
     }
 
-    // NVIDIA usually returns image base64
-    let imageBase64 = null;
+  let imageBase64 = null;
 
-    if (data.image) {
-      imageBase64 = data.image;
-    } else if (data.images?.[0]?.image) {
-      imageBase64 = data.images[0].image;
-    } else if (data.artifact?.base64) {
-      imageBase64 = data.artifact.base64;
-    }
-
-    if (!imageBase64) {
-      return res.status(500).json({
-        error: "No image returned",
-        response: data,
-      });
-    }
-
+if (data.image) {
+  imageBase64 = data.image;
+} else if (data.images?.[0]?.image) {
+  imageBase64 = data.images[0].image;
+} else if (data.artifact?.base64) {
+  imageBase64 = data.artifact.base64;
+} else if (data.artifacts?.[0]?.base64) {
+  imageBase64 = data.artifacts[0].base64;
+}
     const imageBuffer = Buffer.from(imageBase64, "base64");
 
     // Watermark SVG
