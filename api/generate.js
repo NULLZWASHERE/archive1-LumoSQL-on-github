@@ -1,5 +1,4 @@
 // /api/generate.js
-// Vercel Serverless Function
 // npm install sharp
 
 import sharp from "sharp";
@@ -16,9 +15,9 @@ export default async function handler(req, res) {
       prompt,
       width = 1024,
       height = 1024,
-      seed = 0,
+      seed,
       steps = 4,
-    } = req.body;
+    } = req.body || {};
 
     if (!prompt) {
       return res.status(400).json({
@@ -41,28 +40,48 @@ export default async function handler(req, res) {
         prompt,
         width,
         height,
-        seed,
         steps,
+        ...(seed !== undefined ? { seed } : {}),
       }),
     });
 
     const data = await response.json();
 
+    // NVIDIA API error
     if (!response.ok) {
-      return res.status(response.status).json(data);
+      return res.status(response.status).json({
+        error: "NVIDIA API Error",
+        details: data,
+      });
     }
 
-  let imageBase64 = null;
+    // Find image
+    let imageBase64 = null;
 
-if (data.image) {
-  imageBase64 = data.image;
-} else if (data.images?.[0]?.image) {
-  imageBase64 = data.images[0].image;
-} else if (data.artifact?.base64) {
-  imageBase64 = data.artifact.base64;
-} else if (data.artifacts?.[0]?.base64) {
-  imageBase64 = data.artifacts[0].base64;
-}
+    if (typeof data.image === "string") {
+      imageBase64 = data.image;
+    } else if (typeof data.images?.[0]?.image === "string") {
+      imageBase64 = data.images[0].image;
+    } else if (typeof data.artifact?.base64 === "string") {
+      imageBase64 = data.artifact.base64;
+    } else if (typeof data.artifacts?.[0]?.base64 === "string") {
+      imageBase64 = data.artifacts[0].base64;
+    }
+
+    // No image returned
+    if (!imageBase64) {
+      return res.status(500).json({
+        error: "No image returned",
+        response: data,
+      });
+    }
+
+    // Remove data URL prefix if present
+    imageBase64 = imageBase64.replace(
+      /^data:image\/\w+;base64,/,
+      ""
+    );
+
     const imageBuffer = Buffer.from(imageBase64, "base64");
 
     // Watermark SVG
@@ -84,7 +103,7 @@ if (data.image) {
           class="title"
           opacity="0.8"
         >
-          https://discord.gg/25ya7J5h
+          discord.gg/25ya7J5h
         </text>
       </svg>
     `;
@@ -100,7 +119,6 @@ if (data.image) {
       .png()
       .toBuffer();
 
-    // Return base64
     const finalBase64 = finalImage.toString("base64");
 
     return res.status(200).json({
@@ -108,10 +126,10 @@ if (data.image) {
       image: finalBase64,
     });
   } catch (err) {
-    console.error(err);
+    console.error("SERVER ERROR:", err);
 
     return res.status(500).json({
-      error: err.message,
+      error: err.message || "Internal server error",
     });
   }
 }
