@@ -3,138 +3,407 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Flux Image Generator</title>
+  <title>Nebula AI Studio</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    body {
-      background: #0f0f0f;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
     }
 
-    .container {
-      width: 90%;
-      max-width: 700px;
-      background: #181818;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    body{
+      font-family:'Inter',sans-serif;
+      background:
+        radial-gradient(circle at top left,#3b0a69 0%,transparent 30%),
+        radial-gradient(circle at bottom right,#0b3b69 0%,transparent 30%),
+        linear-gradient(135deg,#090909,#111827);
+      color:white;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:30px;
+      overflow-x:hidden;
     }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
+    .container{
+      width:100%;
+      max-width:850px;
+      background:rgba(17,24,39,0.75);
+      backdrop-filter:blur(18px);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:28px;
+      padding:32px;
+      box-shadow:
+        0 0 60px rgba(88,101,242,0.15),
+        0 20px 60px rgba(0,0,0,0.5);
+      position:relative;
+      overflow:hidden;
     }
 
-    textarea {
-      width: 100%;
-      height: 120px;
-      resize: none;
-      border: none;
-      outline: none;
-      border-radius: 10px;
-      padding: 12px;
-      background: #242424;
-      color: white;
-      font-size: 16px;
-      box-sizing: border-box;
+    .container::before{
+      content:"";
+      position:absolute;
+      width:300px;
+      height:300px;
+      background:rgba(88,101,242,0.15);
+      filter:blur(100px);
+      top:-120px;
+      right:-120px;
+      border-radius:50%;
+      pointer-events:none;
     }
 
-    button {
-      width: 100%;
-      margin-top: 15px;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: #5865f2;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:28px;
+      gap:20px;
+      flex-wrap:wrap;
     }
 
-    button:hover {
-      opacity: 0.9;
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:14px;
     }
 
-    .image-box {
-      margin-top: 20px;
-      text-align: center;
+    .logo-icon{
+      width:52px;
+      height:52px;
+      border-radius:16px;
+      background:linear-gradient(135deg,#5865f2,#8b5cf6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      font-weight:800;
+      box-shadow:0 0 25px rgba(88,101,242,0.5);
     }
 
-    img {
-      width: 100%;
-      border-radius: 12px;
-      margin-top: 10px;
+    h1{
+      font-size:30px;
+      font-weight:800;
+      letter-spacing:-1px;
     }
 
-    .loading {
-      margin-top: 15px;
-      text-align: center;
-      display: none;
+    .subtitle{
+      color:#9ca3af;
+      font-size:14px;
+      margin-top:3px;
     }
 
-    .download-btn {
-      display: none;
-      margin-top: 10px;
-      text-decoration: none;
-      background: #2ea043;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 10px;
-      display: inline-block;
+    .badge{
+      background:rgba(88,101,242,0.15);
+      border:1px solid rgba(88,101,242,0.3);
+      color:#c7d2fe;
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:600;
+    }
+
+    .prompt-box{
+      margin-top:10px;
+    }
+
+    textarea{
+      width:100%;
+      min-height:170px;
+      resize:none;
+      border:none;
+      outline:none;
+      border-radius:22px;
+      padding:22px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      color:white;
+      font-size:16px;
+      line-height:1.6;
+      transition:0.25s;
+    }
+
+    textarea:focus{
+      border-color:#5865f2;
+      box-shadow:0 0 0 4px rgba(88,101,242,0.18);
+    }
+
+    textarea::placeholder{
+      color:#6b7280;
+    }
+
+    .actions{
+      display:flex;
+      gap:14px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      flex:1;
+      min-width:220px;
+      border:none;
+      outline:none;
+      cursor:pointer;
+      border-radius:18px;
+      padding:16px 22px;
+      font-size:15px;
+      font-weight:700;
+      transition:0.25s;
+    }
+
+    .generate-btn{
+      background:linear-gradient(135deg,#5865f2,#8b5cf6);
+      color:white;
+      box-shadow:0 10px 30px rgba(88,101,242,0.35);
+    }
+
+    .generate-btn:hover{
+      transform:translateY(-2px);
+      opacity:0.96;
+    }
+
+    .clear-btn{
+      background:rgba(255,255,255,0.06);
+      color:#d1d5db;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .clear-btn:hover{
+      background:rgba(255,255,255,0.1);
+    }
+
+    .loading{
+      margin-top:22px;
+      display:none;
+      align-items:center;
+      gap:12px;
+      color:#cbd5e1;
+      font-size:15px;
+      font-weight:500;
+    }
+
+    .spinner{
+      width:20px;
+      height:20px;
+      border:3px solid rgba(255,255,255,0.15);
+      border-top:3px solid #8b5cf6;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+    }
+
+    @keyframes spin{
+      to{
+        transform:rotate(360deg);
+      }
+    }
+
+    .image-section{
+      margin-top:28px;
+      display:none;
+      animation:fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn{
+      from{
+        opacity:0;
+        transform:translateY(10px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .image-card{
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:24px;
+      overflow:hidden;
+    }
+
+    img{
+      width:100%;
+      display:block;
+    }
+
+    .image-actions{
+      padding:18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+
+    .download-btn{
+      text-decoration:none;
+      background:linear-gradient(135deg,#10b981,#22c55e);
+      color:white;
+      padding:13px 18px;
+      border-radius:14px;
+      font-weight:700;
+      transition:0.25s;
+    }
+
+    .download-btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .image-label{
+      color:#9ca3af;
+      font-size:14px;
+    }
+
+    .notice{
+      margin-top:24px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      padding:18px;
+      border-radius:18px;
+      color:#9ca3af;
+      font-size:13px;
+      line-height:1.7;
+    }
+
+    .notice strong{
+      color:white;
+    }
+
+    @media(max-width:700px){
+
+      .container{
+        padding:24px;
+      }
+
+      h1{
+        font-size:24px;
+      }
+
+      textarea{
+        min-height:150px;
+      }
+
+      .actions{
+        flex-direction:column;
+      }
+
+      button{
+        width:100%;
+      }
+
     }
   </style>
 </head>
+
 <body>
 
   <div class="container">
-    <h1>Flux AI Image Generator</h1>
 
-    <textarea id="prompt" placeholder="Enter your prompt..."></textarea>
+    <div class="topbar">
 
-    <button onclick="generateImage()">
-      Generate Image
-    </button>
+      <div class="logo">
+        <div class="logo-icon">
+          ✦
+        </div>
+
+        <div>
+          <h1>Nebula AI Studio</h1>
+          <div class="subtitle">
+            Advanced AI Image Generation Platform
+          </div>
+        </div>
+      </div>
+
+      <div class="badge">
+        AI Powered
+      </div>
+
+    </div>
+
+    <div class="prompt-box">
+
+      <textarea
+        id="prompt"
+        placeholder="Describe the image you want to create... futuristic cities, cinematic portraits, fantasy worlds, anime art, hyper realistic renders..."
+      ></textarea>
+
+    </div>
+
+    <div class="actions">
+
+      <button class="generate-btn" onclick="generateImage()">
+        ✨ Generate Image
+      </button>
+
+      <button class="clear-btn" onclick="clearPrompt()">
+        Clear Prompt
+      </button>
+
+    </div>
 
     <div class="loading" id="loading">
-      Generating image...
+      <div class="spinner"></div>
+      Generating your image...
     </div>
 
-    <div class="image-box">
-      <img id="result" />
+    <div class="image-section" id="imageSection">
 
-      <br>
+      <div class="image-card">
 
-      <a id="downloadBtn" class="download-btn" download="generated.png">
-        Download Image
-      </a>
+        <img id="result" />
+
+        <div class="image-actions">
+
+          <div class="image-label">
+            Generated with Nebula AI
+          </div>
+
+          <a
+            id="downloadBtn"
+            class="download-btn"
+            download="nebula-ai-image.png"
+          >
+            Download Image
+          </a>
+
+        </div>
+
+      </div>
+
     </div>
+
+    <div class="notice">
+      <strong>Notice:</strong>
+      AI models generate responses and outputs based on complex algorithms and machine learning techniques, and those responses or outputs may be inaccurate, harmful, biased or indecent. By testing this model, you assume the risk of any harm caused by any response or output of the model. Please do not upload any confidential information or personal data unless expressly permitted. Your use is not logged.
+    </div>
+
   </div>
 
   <script>
     async function generateImage() {
-      const prompt = document.getElementById("prompt").value;
+
+      const prompt = document.getElementById("prompt").value.trim();
+
       const loading = document.getElementById("loading");
       const result = document.getElementById("result");
+      const imageSection = document.getElementById("imageSection");
       const downloadBtn = document.getElementById("downloadBtn");
 
       if (!prompt) {
-        alert("Enter a prompt");
+        alert("Please enter a prompt.");
         return;
       }
 
-      loading.style.display = "block";
-      result.src = "";
-      downloadBtn.style.display = "none";
+      loading.style.display = "flex";
+      imageSection.style.display = "none";
 
       try {
-        // CHANGE THIS
+
         const API_URL = "/api/generate";
 
         const response = await fetch(API_URL, {
@@ -156,7 +425,7 @@
         loading.style.display = "none";
 
         if (!data.success) {
-          alert(data.error || "Failed to generate");
+          alert(data.error || "Failed to generate image.");
           return;
         }
 
@@ -165,12 +434,23 @@
         result.src = imageData;
 
         downloadBtn.href = imageData;
-        downloadBtn.style.display = "inline-block";
+
+        imageSection.style.display = "block";
 
       } catch (err) {
+
         loading.style.display = "none";
+
         alert(err.message);
+
       }
+
+    }
+
+    function clearPrompt() {
+
+      document.getElementById("prompt").value = "";
+
     }
   </script>
 
