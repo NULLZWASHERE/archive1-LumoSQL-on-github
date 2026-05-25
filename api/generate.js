@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     const response = await fetch(invokeUrl, {
       method: "POST",
       headers: {
-        Authorization: "Bearer YOUR_NVIDIA_API_KEY",
+        Authorization: "Bearer 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",
         Accept: "application/json",
         "Content-Type": "application/json",
       },
