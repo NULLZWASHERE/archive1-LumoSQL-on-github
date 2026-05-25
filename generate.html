@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flux Image Generator</title>
+
+  <style>
+    body {
+      background: #0f0f0f;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 700px;
+      background: #181818;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      resize: none;
+      border: none;
+      outline: none;
+      border-radius: 10px;
+      padding: 12px;
+      background: #242424;
+      color: white;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #5865f2;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .image-box {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    img {
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+
+    .loading {
+      margin-top: 15px;
+      text-align: center;
+      display: none;
+    }
+
+    .download-btn {
+      display: none;
+      margin-top: 10px;
+      text-decoration: none;
+      background: #2ea043;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Flux AI Image Generator</h1>
+
+    <textarea id="prompt" placeholder="Enter your prompt..."></textarea>
+
+    <button onclick="generateImage()">
+      Generate Image
+    </button>
+
+    <div class="loading" id="loading">
+      Generating image...
+    </div>
+
+    <div class="image-box">
+      <img id="result" />
+
+      <br>
+
+      <a id="downloadBtn" class="download-btn" download="generated.png">
+        Download Image
+      </a>
+    </div>
+  </div>
+
+  <script>
+    async function generateImage() {
+      const prompt = document.getElementById("prompt").value;
+      const loading = document.getElementById("loading");
+      const result = document.getElementById("result");
+      const downloadBtn = document.getElementById("downloadBtn");
+
+      if (!prompt) {
+        alert("Enter a prompt");
+        return;
+      }
+
+      loading.style.display = "block";
+      result.src = "";
+      downloadBtn.style.display = "none";
+
+      try {
+        // CHANGE THIS
+        const API_URL = "/api/generate";
+
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: prompt,
+            width: 1024,
+            height: 1024,
+            seed: 0,
+            steps: 4
+          })
+        });
+
+        const data = await response.json();
+
+        loading.style.display = "none";
+
+        if (!data.success) {
+          alert(data.error || "Failed to generate");
+          return;
+        }
+
+        const imageData = `data:image/png;base64,${data.image}`;
+
+        result.src = imageData;
+
+        downloadBtn.href = imageData;
+        downloadBtn.style.display = "inline-block";
+
+      } catch (err) {
+        loading.style.display = "none";
+        alert(err.message);
+      }
+    }
+  </script>
+
+</body>
+</html>
